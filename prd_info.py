@@ -169,12 +169,20 @@ def get_prd_flpkrt(search, no_of_products):
 def main():
 
     search=input("Enter what you want to search:")
-    feature=int(input("1:price high to low\n2:price low to high\n =>"))
-    if isinstance(feature, int):
-        pass
-    else:
-        print("please enter a right choise")
-    no_of_products=int(input("Enter the no. of products you want to scrap:"))
+    flag=True
+    while flag:
+        try:
+            feature=int(input("1:price high to low\n2:price low to high\n =>"))
+            if isinstance(feature, int) and feature == 1 or feature == 2:
+                flag=False
+            else:
+                print("please enter a right choise")
+        except Exception as e:
+            print("Enter the number between [1,2] only.")
+
+    no_of_products=input("Enter the no. of products you want to scrap:")
+    if len(no_of_products)==0:
+        no_of_products=10
     prd_details=get_prd_amazon(search, no_of_products)
     prd_details1=get_prd_flpkrt(search, no_of_products)
     for key in prd_details1:
@@ -183,7 +191,7 @@ def main():
 
     if feature == 1:
         product_details.sort_values(by='price', ascending=False)
-    else:
+    elif feature==2:
         product_details.sort_values(by=['price'])
     data_to_xl = pd.ExcelWriter('product_details.xlsx')
     product_details.to_excel(data_to_xl)
