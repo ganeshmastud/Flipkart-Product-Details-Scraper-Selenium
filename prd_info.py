@@ -41,8 +41,9 @@ def get_prd_amazon(search,no_of_products):
     cnt = 0
     x = 0
     parent = driver.current_window_handle
+    prd_details = {"name": [], "source": [], "price": [], "model no": [], "category": []}
     for lnk in prds_likns:
-        prd_details={"name":[], "source": [], "price": [], "model no": [],"category":[]}
+
         lnk.click()
         x += 1
         handles = driver.window_handles
@@ -63,14 +64,19 @@ def get_prd_amazon(search,no_of_products):
 
                 prd_details["model no"].append(col.text)
                 table = driver.find_element_by_id('productDetails_detailBullets_sections1')
-                row = table.find_elements_by_tag_name('tr')[6]
-                category=row.find_element_by_tag_name('td')
                 try:
-                    category = row.find_element_by_tag_name('td')
+                    row = table.find_elements_by_tag_name('tr')[6]
+
+                    try:
+                        category = row.find_element_by_tag_name('td')
+                        category=category.text
+                        # prd_details["category"].append(category.text)
+                    except Exception as e:
+                        category="Not available"
                 except Exception as e:
-                    category="Not available"
-                print("category",category.text)
-                prd_details["category"].append(category.text)
+                    category = "Not available"
+                print("category",category)
+                prd_details["category"].append(category)
                 price=""
                 if len(price)==0:
                     try:
@@ -183,8 +189,8 @@ def main():
     no_of_products=input("Enter the no. of products you want to scrap:")
     if len(no_of_products)==0:
         no_of_products=10
-    prd_details=get_prd_amazon(search, no_of_products)
-    prd_details1=get_prd_flpkrt(search, no_of_products)
+    prd_details=get_prd_amazon(search, int(no_of_products))
+    prd_details1=get_prd_flpkrt(search, int(no_of_products))
     for key in prd_details1:
         prd_details[key].extend(prd_details1[key])
     product_details = pd.DataFrame(prd_details)
